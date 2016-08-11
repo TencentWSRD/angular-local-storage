@@ -1,15 +1,15 @@
 {
-  "name": "angular-local-storage",
-  "version": "0.3.0",
+  "name": "angular-local-storage-ci-dev",
+  "version": "0.3.3",
   "description": "An Angular module that gives you access to the browsers local storage",
-  "homepage": "https://github.com/grevory/angular-local-storage",
-  "main": "./index.js",
+  "homepage": "https://github.com/TencentWSRD/angular-local-storage",
+  "main": "index.js",
   "scripts": {
     "test": "grunt test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/grevory/angular-local-storage.git"
+    "url": "https://github.com/TencentWSRD/angular-local-storage.git"
   },
   "keywords": [
     "AngularJS",
@@ -18,11 +18,12 @@
   ],
   "author": "grevory <greg@gregpike.ca>",
   "contributors": [
-    "Ariel Mashraki <ariel@mashraki.co.il>"
+    "Ariel Mashraki <ariel@mashraki.co.il>",
+    "Xiao Yuze <xiaoyuze88@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/grevory/angular-local-storage/issues"
+    "url": "https://github.com/TencentWSRD/angular-local-storage/issues"
   },
   "devDependencies": {
     "grunt": "~0.4.2",

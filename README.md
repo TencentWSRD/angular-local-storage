@@ -1,81 +1,20 @@
-angular-local-storage
+angular-local-storage-ci-dev
 =====================
 An Angular module that gives you access to the browsers local storage
 
-[![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
-[![Dependency Status][david-image]][david-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
+A forked version for our project CI, add new features such as expiry support for localStorage and so on to meet our demand.
 
-##Table of contents:
-- [![Gitter][gitter-image]][gitter-url]
-- [Get Started](#get-started)
-- [Video Tutorial](https://www.youtube.com/watch?v=I4iB0kOSmx8)
-- [Development](#development)
-- [Configuration](#configuration)
- - [setPrefix](#setprefix)
- - [setStorageType](#setstoragetype)
- - [setDefaultToCookie](#setdefaulttocookie)
- - [setStorageCookie](#setstoragecookie)
- - [setStorageCookieDomain](#setstoragecookiedomain)
- - [setNotify](#setnotify)
- - [Example](#configuration-example)
-- [API Documentation](#api-documentation)
- - [isSupported](#issupported)
- - [getStorageType](#getstoragetype)
- - [set](#set)
- - [get](#get)
- - [keys](#keys)
- - [remove](#remove)
- - [clearAll](#clearall)
- - [bind](#bind)
- - [deriveKey](#derivekey)
- - [length](#length)
- - [cookie](#cookie)
-    - [isSupported](#cookieissupported)
-    - [set](#cookieset)
-    - [get](#cookieget)
-    - [remove](#cookieremove)
-    - [clearAll](#cookieclearall)
-
-##Get Started
-**(1)** You can install angular-local-storage using 3 different ways:<br/>
-**Git:**
-clone & build [this](https://github.com/grevory/angular-local-storage.git) repository<br/>
-**Bower:**
+## Install
 ```bash
-$ bower install angular-local-storage --save
+$ npm install angular-local-storage-ci-dev
 ```
-**npm:**
-```bash
-$ npm install angular-local-storage
-```
-**(2)** Include `angular-local-storage.js` (or `angular-local-storage.min.js`) from the [dist](https://github.com/grevory/angular-local-storage/tree/master/dist) directory in your `index.html`, after including Angular itself.
 
-**(3)** Add `'LocalStorageModule'` to your main module's list of dependencies.
+```javascript
+var angularLocalStorage = require('angular-local-storage-ci-dev');
 
-When you're done, your setup should look similar to the following:
-
-```html
-<!doctype html>
-<html ng-app="myApp">
-<head>
-
-</head>
-<body>
-    ...
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
-    <script src="bower_components/js/angular-local-storage.min.js"></script>
-    ...
-    <script>
-        var myApp = angular.module('myApp', ['LocalStorageModule']);
-
-    </script>
-    ...
-</body>
-</html>
+angular.module('app', [
+    angularLocalStorage
+  ]);
 ```
 ##Configuration
 ###setPrefix
@@ -96,36 +35,16 @@ myApp.config(function (localStorageServiceProvider) {
     .setStorageType('sessionStorage');
 });
 ```
-###setDefaultToCookie
-If localStorage is not supported, the library will default to cookies instead. This behavior can be disabled.<br/>
-**Default:** `true`
-```js
-myApp.config(function (localStorageServiceProvider) {
-  localStorageServiceProvider
-    .setDefaultToCookie(false);
-});
-```
 ###setStorageCookie
 Set cookie options (usually in case of fallback)<br/>
-**expiry:** number of days before cookies expire (0 = session cookie). **default:** `30`<br/>
-**path:** the web path the cookie represents. **default:** `'/'`
+**cookieOptions:** options
+**cookieOptions.path** the web path the cookie represents. **default:** `'/'`
 ```js
 myApp.config(function (localStorageServiceProvider) {
   localStorageServiceProvider
     .setStorageCookie(45, '<path>');
 });
 ```
-###setStorageCookieDomain
-Set the cookie domain, since this runs inside a the `config()` block, only providers and constants can be injected.  As a result, `$location` service can't be used here, use a hardcoded string or `window.location`.<br/>
-**No default value**
-```js
-myApp.config(function (localStorageServiceProvider) {
-  localStorageServiceProvider
-    .setStorageCookieDomain('<domain>');
-});
-```
-
-For local testing (when you are testing on localhost) set the domain to an empty string ''. Setting the domain to 'localhost' will not work on all browsers (eg. Chrome) since some browsers only allow you to set domain cookies for registry controlled domains, i.e. something ending in .com or so, but not IPs **or intranet hostnames** like localhost. </br>
 
 ###setNotify
 
@@ -143,7 +62,7 @@ Using all together
 ```js
 myApp.config(function (localStorageServiceProvider) {
   localStorageServiceProvider
-    .setPrefix('myApp')
+    .setPrefix('newci')
     .setStorageType('sessionStorage')
     .setNotify(true, true)
 });
@@ -170,7 +89,6 @@ myApp.controller('MainCtrl', function($scope, localStorageService) {
   //...
 });
 ```
-You can also dynamically change storage type by passing the storage type as the last parameter for any of the API calls. For example: `localStorageService.set(key, val, "sessionStorage");`
 ###set
 Directly adds a value to local storage.<br/>
 If local storage is not supported, use cookies instead.<br/>
@@ -179,7 +97,9 @@ If local storage is not supported, use cookies instead.<br/>
 myApp.controller('MainCtrl', function($scope, localStorageService) {
   //...
   function submit(key, val) {
-   return localStorageService.set(key, val);
+   // expiry: milliseconds, this value will be expired in `expiry` milliseconds, if not set, and `localStorageService.expiry.alwaysExpire` is true, it will expire in the default expiry time.
+   // expireTimeStamp: TimeStamp, this value will be expired after this absolute time.
+   return localStorageService.set(key, val, expiry, expireTimeStamp);
   }
   //...
 });
@@ -192,7 +112,8 @@ If local storage is not supported, use cookies instead.<br/>
 myApp.controller('MainCtrl', function($scope, localStorageService) {
   //...
   function getItem(key) {
-   return localStorageService.get(key);
+   // expiry: Number, if this value hasn't been wrapped by us, we will wrap them by using this expiry time.
+   return localStorageService.get(key, expiry);
   }
   //...
 });
@@ -359,43 +280,3 @@ myApp.controller('MainCtrl', function($scope, localStorageService) {
   }
 });
 ```
-
-Check out the full demo at http://gregpike.net/demos/angular-local-storage/demo.html
-
-##Development:
-* Don't forget about tests.
-* If you planning add some feature please create issue before.
-
-Clone the project:
-```sh
-$ git clone https://github.com/<your-repo>/angular-local-storage.git
-$ npm install
-$ bower install
-```
-Run the tests:
-```sh
-$ grunt test
-```
-**Deploy:**<br/>
-Run the build task, update version before(bower,package)
-```sh
-$ npm version patch|minor|major
-$ grunt dist
-$ git commit [message]
-$ git push origin master --tags
-```
-
-[npm-image]: https://img.shields.io/npm/v/angular-local-storage.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/angular-local-storage
-[travis-image]: https://img.shields.io/travis/grevory/angular-local-storage.svg?style=flat-square
-[travis-url]: https://travis-ci.org/grevory/angular-local-storage
-[coveralls-image]: https://img.shields.io/coveralls/grevory/angular-local-storage.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/r/grevory/angular-local-storage
-[david-image]: http://img.shields.io/david/grevory/angular-local-storage.svg?style=flat-square
-[david-url]: https://david-dm.org/grevory/angular-local-storage
-[license-image]: http://img.shields.io/npm/l/angular-local-storage.svg?style=flat-square
-[license-url]: LICENSE
-[downloads-image]: http://img.shields.io/npm/dm/angular-local-storage.svg?style=flat-square
-[downloads-url]: https://npmjs.org/package/angular-local-storage
-[gitter-image]: https://badges.gitter.im/Join%20Chat.svg
-[gitter-url]: https://gitter.im/grevory/angular-local-storage?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
